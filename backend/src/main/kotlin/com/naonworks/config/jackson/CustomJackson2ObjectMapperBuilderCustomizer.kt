@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
+import java.time.OffsetDateTime
 
 
 @Configuration(proxyBeanMethods = false)
@@ -14,5 +15,8 @@ class CustomJackson2ObjectMapperBuilderCustomizer : Jackson2ObjectMapperBuilderC
         builder.featuresToEnable(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL)
         builder.propertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE)
         builder.serializationInclusion(JsonInclude.Include.NON_NULL)
+
+        builder.deserializerByType(Number::class.java, CustomNumberDeserializer())
+        builder.deserializerByType(OffsetDateTime::class.java, CustomOffsetDateTimeDeserializer())
     }
 }
