@@ -1,5 +1,5 @@
 <template>
-  <q-table dense :columns="columns" :rows="rows"> </q-table>
+  <q-table dense :columns="columns" :rows="rows" table-header-class="bg-secondary"> </q-table>
 
   <!-- <table class="table">
     <tr>
