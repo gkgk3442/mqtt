@@ -3,7 +3,9 @@
     <DateTimePicker @update="(v) => updateTime(v)" :start="start" :end="end" />
     <InputLeftLabel v-model="form.level" :error="formError.level" dense label="Level" :options="levelOptions" />
     <InputLeftLabel v-model="form.description" :error="formError.description" dense number label="Description" />
+    <!-- <div class="full-width row reverse"> -->
     <q-btn dense color="primary" size="md" label="apply" @click="onClkSubmit" type="submit" />
+    <!-- </div> -->
   </q-form>
 </template>
 <script setup lang="ts">
@@ -32,6 +34,11 @@ const { form, formError, submit } = useModalForm({
   formInit: { datetime: dayjs().toString(), level: 0, description: '' },
   submit: {
     url: '/api/modbus/log',
+    handleRequest: (v) => {
+      const validDate = dayjs(v.datetime, 'YYYY-MM-DDTHH:mm:ss.SSSZ').tz(dayjs.tz.guess()).isValid()
+
+      return { ...v, datetime: validDate ? validDate : dayjs(v.datetime).tz(dayjs.tz.guess()).format('YYYY-MM-DDTHH:mm:ss.SSSZ') }
+    },
   },
 })
 

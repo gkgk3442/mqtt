@@ -6,7 +6,9 @@
     <InputLeftLabel v-model="form.transactionDelay" :error="formError.transactionDelay" dense number label="Transaction Delay" type="number" :min="10" :max="100" />
     <InputLeftLabel v-model="form.timeout" :error="formError.timeout" dense number label="Timeout" type="number" :min="1000" :max="3000" />
 
+    <!-- <div class="full-width row reverse"> -->
     <q-btn dense color="primary" size="md" label="apply" @click="onClkSubmit" type="submit" />
+    <!-- </div> -->
   </q-form>
 </template>
 <script setup lang="ts">

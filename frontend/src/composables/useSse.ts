@@ -6,8 +6,8 @@ export const useSse = (url: string) => {
   watch(status, () => {
     if (status.value === 'CLOSED') close()
   })
+  onUnmounted(() => close())
   return {
     data,
   }
-  onUnmounted(() => close())
 }

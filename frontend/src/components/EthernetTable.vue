@@ -56,7 +56,10 @@ const rows = ref<IData[]>([])
 const { data } = useSse('/api/modbus/ethernet')
 
 watch(data, () => {
-  if (data.value) rows.value.push(JSON.parse(data.value) as IData)
+  if (data.value) {
+    const json = JSON.parse(data.value)
+    rows.value = [json, ...rows.value]
+  }
 })
 </script>
 
