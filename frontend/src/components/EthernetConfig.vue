@@ -1,5 +1,5 @@
 <template>
-  <q-form>
+  <q-form @submit.prevent="onClkSubmit">
     <InputLeftLabel v-model="form.protocol" :error="formError.protocol" dense label="Protocol" :options="protocolOptions" />
     <InputLeftLabel v-model="form.ip" :error="formError.ip" dense label="IP" />
     <InputLeftLabel v-model="form.port" :error="formError.port" dense number label="Port" type="number" :min="0" :max="65535" />
@@ -7,7 +7,7 @@
     <InputLeftLabel v-model="form.timeout" :error="formError.timeout" dense number label="Timeout" type="number" :min="1000" :max="3000" />
 
     <!-- <div class="full-width row reverse"> -->
-    <q-btn dense color="primary" size="md" label="apply" @click="onClkSubmit" type="submit" />
+    <q-btn dense color="primary" size="md" label="apply" type="submit" />
     <!-- </div> -->
   </q-form>
 </template>
