@@ -105,7 +105,7 @@ tasks.generateGitProperties {
     val gitCommitId = generatedProperties["git.commit.id"].toString()
     val commitTime = generatedProperties["git.commit.time"].toString()
 
-    doLast {
+    doFirst {
         val commitTimeParse = OffsetDateTime.parse(commitTime, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ"))
         val commitDateStr = commitTimeParse.format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss_Z"))
 
