@@ -1,10 +1,10 @@
 <template>
-  <q-form>
-    <DateTimePicker @update="(v) => updateTime(v)" :start="start" :end="end" />
+  <q-form @submit.prevent="onClkSubmit">
+    <DateTimePicker @update="(v) => updateTime(v)" :init="start" />
     <InputLeftLabel v-model="form.level" :error="formError.level" dense label="Level" :options="levelOptions" />
     <InputLeftLabel v-model="form.description" :error="formError.description" dense number label="Description" />
     <!-- <div class="full-width row reverse"> -->
-    <q-btn dense color="primary" size="md" label="apply" @click="onClkSubmit" type="submit" />
+    <q-btn dense color="primary" size="md" label="apply" type="submit" />
     <!-- </div> -->
   </q-form>
 </template>
@@ -43,10 +43,9 @@ const { form, formError, submit } = useModalForm({
 })
 
 const start = dayjs.tz(dayjs()).tz(dayjs.tz.guess()).toString()
-const end = dayjs.tz(dayjs()).tz(dayjs.tz.guess()).toString()
 
-const updateTime = (v: { startDateTime: string; endDateTime: string }) => {
-  form.value.datetime = v.startDateTime
+const updateTime = (v: { dateTime: string }) => {
+  form.value.datetime = v.dateTime
 }
 
 const onClkSubmit = async () => await submit(post)
