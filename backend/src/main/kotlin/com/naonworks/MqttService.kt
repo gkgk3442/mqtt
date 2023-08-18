@@ -1,4 +1,4 @@
-package com.naonworks.mqtt
+package com.naonworks
 
 import jakarta.annotation.PostConstruct
 import jakarta.annotation.PreDestroy
