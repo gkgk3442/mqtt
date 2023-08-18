@@ -5,18 +5,18 @@
       <th>Subscribe</th>
     </tr>
     <tr>
-      <td>
+      <td class="config">
         <EthernetConfig />
       </td>
-      <td>
+      <td class="table top-align" colspan="1">
         <EthernetTable />
       </td>
     </tr>
     <tr>
-      <td>
+      <td class="config">
         <LogConfig />
       </td>
-      <td>
+      <td class="table top-align">
         <LogTable />
       </td>
     </tr>
@@ -38,8 +38,18 @@ td {
   border: 1px solid black;
 }
 table {
-  height: calc(100vh - 16px);
-  width: calc(100vh - 16px);
   margin: 8px;
+}
+
+.config {
+  width: fit-content;
+  padding: 20px;
+}
+.table {
+  width: 500px;
+}
+
+.top-align {
+  vertical-align: top;
 }
 </style>

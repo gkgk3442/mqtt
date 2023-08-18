@@ -199,13 +199,13 @@ onUnmounted(() => eventMounted(false))
   height: 30px;
 }
 
-.input-left-label > .q-field {
-  height: 30px;
-  max-width: 200px;
-}
+// .input-left-label > .q-field {
+//   height: 30px;
+//   max-width: 200px;
+// }
 
-.input-left-label > :deep(.q-field--dense .q-field__control) {
-  height: 30px;
-  max-width: 200px;
-}
+// .input-left-label > :deep(.q-field--dense .q-field__control) {
+//   height: 30px;
+//   max-width: 200px;
+// }
 </style>

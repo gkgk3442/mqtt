@@ -3,7 +3,7 @@
   <InputLeftLabel v-model="form.level" :error="formError.level" dense label="Level" :options="levelOptions" />
   <InputLeftLabel v-model="form.description" :error="formError.description" dense number label="Description" />
 
-  <q-btn label="apply" @click="onClkSubmit" />
+  <q-btn dense color="primary" size="md" label="apply" @click="onClkSubmit" />
 </template>
 <script setup lang="ts">
 import InputLeftLabel from '@/components/InputLeftLabel.vue'
@@ -30,7 +30,5 @@ const { form, formError, submit } = useModalForm({
   },
 })
 
-const onClkSubmit = async () => {
-  submit(post)
-}
+const onClkSubmit = async () => await submit(post)
 </script>
