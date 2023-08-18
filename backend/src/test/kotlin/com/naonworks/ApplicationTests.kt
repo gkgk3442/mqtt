@@ -1,4 +1,4 @@
-//package com.naonworks.mqtt
+//package com.naonworks
 //
 //import org.junit.jupiter.api.Test
 //import org.springframework.boot.test.context.SpringBootTest
