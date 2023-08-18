@@ -104,7 +104,7 @@ class ModbusController(
 
             log.debug("publish payload : ${json}")
 
-            if (!service.publish(MODBUS_ETHERNET_TOPIC, json))
+            if (!service.publish(MODBUS_LOG_TOPIC, json))
                 return ResponseEntity.internalServerError().build()
         }
 
@@ -122,7 +122,7 @@ class ModbusController(
         return service.subscribe(MODBUS_LOG_TOPIC)
             .map {
                 val payloadString = String(it.payload)
-                log.debug("subscribe topic : ${MODBUS_ETHERNET_TOPIC}, payload : ${payloadString}")
+                log.debug("subscribe topic : ${MODBUS_LOG_TOPIC}, payload : ${payloadString}")
 
                 val dto = objectMapper.readValue<ModbusLogDto>(payloadString)
                 ServerSentEvent.builder(dto).build()
