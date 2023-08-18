@@ -1,12 +1,19 @@
 <template>
-  <table>
+  <div class="q-pa-sm">
+    <div class="row q-gutter-sm">
+      <q-card class="col-12 col-md-6 q-pa-lg"><EthernetConfig /></q-card>
+      <q-card class="col-12 col-md-grow q-pa-lg"><EthernetTable /></q-card>
+      <q-card class="col-12 col-md-6 q-pa-lg"><LogConfig /></q-card>
+      <q-card class="col-12 col-md-grow q-pa-lg"><LogTable /></q-card>
+    </div>
+  </div>
+  <!-- <table>
     <tr>
       <th>Publish</th>
       <th>Subscribe</th>
     </tr>
     <tr>
       <td class="config">
-        <EthernetConfig />
       </td>
       <td class="table top-align" colspan="1">
         <EthernetTable />
@@ -20,7 +27,7 @@
         <LogTable />
       </td>
     </tr>
-  </table>
+  </table> -->
 </template>
 <script setup lang="ts">
 import EthernetConfig from '@/components/EthernetConfig.vue'

@@ -1,5 +1,5 @@
 <template>
-  <table class="table">
+  <!-- <table class="table">
     <tr>
       <th>protocol</th>
       <th>ip</th>
@@ -14,7 +14,8 @@
       <td>{{ row.transactionDelay }}</td>
       <td>{{ row.timeout }}</td>
     </tr>
-  </table>
+  </table> -->
+  <q-table dense :columns="columns" :rows="rows"> </q-table>
 </template>
 <script setup lang="ts">
 import { useSse } from '@/composables/useSse'
@@ -27,6 +28,28 @@ interface IData {
   transactionDelay: number
   timeout: number
 }
+const columns = ref([
+  {
+    name: 'protocol',
+    field: 'protocol',
+    label: 'Protocol',
+    format: (v: number) => {
+      if (v === 0) {
+        return 'TCP'
+      } else if (v === 1) {
+        return 'RTU'
+      } else if (v === 2) {
+        return 'ASCII'
+      } else {
+        return '-'
+      }
+    },
+  },
+  { name: 'ip', field: 'ip', label: 'IP' },
+  { name: 'port', field: 'port', label: 'Port' },
+  { name: 'transactionDelay', field: 'transactionDelay', label: 'Transaction Delay' },
+  { name: 'timeout', field: 'timeout', label: 'Timeout' },
+])
 
 const rows = ref<IData[]>([])
 
@@ -37,15 +60,4 @@ watch(data, () => {
 })
 </script>
 
-<style lang="scss" scoped>
-th,
-td {
-  border: 1px solid black;
-  border-collapse: collapse;
-}
-table {
-  margin: 0px;
-  width: 100%;
-  table-layout: fixed;
-}
-</style>
+<style lang="scss" scoped></style>

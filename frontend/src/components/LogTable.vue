@@ -1,5 +1,7 @@
 <template>
-  <table class="table">
+  <q-table dense :columns="columns" :rows="rows"> </q-table>
+
+  <!-- <table class="table">
     <tr>
       <th>datetime</th>
       <th>level</th>
@@ -10,7 +12,7 @@
       <td>{{ row.level }}</td>
       <td>{{ row.description }}</td>
     </tr>
-  </table>
+  </table> -->
 </template>
 <script setup lang="ts">
 import { useSse } from '@/composables/useSse'
@@ -25,20 +27,34 @@ interface IData {
 const rows = ref<IData[]>([])
 
 const { data } = useSse('/api/modbus/log')
-
+const columns = ref([
+  { name: 'datetime', field: 'datetime', label: 'Date/Time' },
+  {
+    name: 'level',
+    field: 'level',
+    label: 'Level',
+    format: (v: number) => {
+      if (v === 0) {
+        return 'TRACE'
+      } else if (v === 1) {
+        return 'DEBUG'
+      } else if (v === 2) {
+        return 'INFO'
+      } else if (v === 3) {
+        return 'WARN'
+      } else if (v === 4) {
+        return 'ERROR'
+      } else if (v === 5) {
+        return 'FATAL'
+      } else {
+        return '-'
+      }
+    },
+  },
+  { name: 'description', field: 'description', label: 'Description' },
+])
 watch(data, () => {
   if (data.value) rows.value.push(JSON.parse(data.value) as IData)
 })
 </script>
-<style lang="scss" scoped>
-th,
-td {
-  border: 1px solid black;
-  border-collapse: collapse;
-}
-.table {
-  width: 100%;
-  table-layout: fixed;
-  margin: 0px;
-}
-</style>
+<style lang="scss" scoped></style>
