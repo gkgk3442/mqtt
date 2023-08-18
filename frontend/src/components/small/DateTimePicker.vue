@@ -1,5 +1,5 @@
 <template>
-  <div class="row q-pb-sm">
+  <div class="row q-pb-sm items-center">
     <div class="col-3">
       <span class="text-weight-bold" :class="{ 'text-grey-5': $q.dark.isActive }">Date</span>
     </div>
@@ -24,7 +24,7 @@
       </template>
     </q-input>
   </div>
-  <div class="row q-pb-sm">
+  <div class="row q-pb-sm items-center">
     <div class="col-3">
       <span class="text-weight-bold" :class="{ 'text-grey-5': $q.dark.isActive }">Time</span>
     </div>
