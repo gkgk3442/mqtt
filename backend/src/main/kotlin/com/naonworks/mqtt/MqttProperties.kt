@@ -1,4 +1,4 @@
-package com.naonworks
+package com.naonworks.mqtt
 
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
