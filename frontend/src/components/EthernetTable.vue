@@ -1,21 +1,5 @@
 <template>
-  <!-- <table class="table">
-    <tr>
-      <th>protocol</th>
-      <th>ip</th>
-      <th>port</th>
-      <th>transaction delay</th>
-      <th>timeout</th>
-    </tr>
-    <tr v-for="row in rows" :key="`${row.protocol}_${row.ip}_${row.port}`">
-      <td>{{ row.protocol }}</td>
-      <td>{{ row.ip }}</td>
-      <td>{{ row.port }}</td>
-      <td>{{ row.transactionDelay }}</td>
-      <td>{{ row.timeout }}</td>
-    </tr>
-  </table> -->
-  <q-table dense :columns="columns" :rows="rows"> </q-table>
+  <q-table dense :columns="columns" :rows="rows" table-header-class="bg-secondary"> </q-table>
 </template>
 <script setup lang="ts">
 import { useSse } from '@/composables/useSse'

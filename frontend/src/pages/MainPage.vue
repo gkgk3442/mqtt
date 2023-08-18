@@ -1,33 +1,16 @@
 <template>
-  <div class="q-pa-sm">
-    <div class="row q-gutter-sm">
-      <q-card class="col-12 col-md-6 q-pa-lg"><EthernetConfig /></q-card>
-      <q-card class="col-12 col-md-grow q-pa-lg"><EthernetTable /></q-card>
-      <q-card class="col-12 col-md-6 q-pa-lg"><LogConfig /></q-card>
-      <q-card class="col-12 col-md-grow q-pa-lg"><LogTable /></q-card>
+  <div class="row q-pa-sm q-gutter-sm">
+    <div class="row q-gutter-sm col-lg-6 col-12 q-pr-md">
+      <q-card class="col-12 text-center text-h6 bg-primary text-white">Publish</q-card>
+      <q-card style="height: 320px" class="col-12 q-pa-lg"><EthernetConfig /></q-card>
+      <q-card style="height: 320px" class="col-12 q-pa-lg"><LogConfig /></q-card>
+    </div>
+    <div class="row q-gutter-sm col-md-grow col-12 q-pr-md">
+      <q-card class="col-12 text-center text-h6 bg-primary text-white">Subscribe</q-card>
+      <q-card style="height: 320px" class="col-12"><EthernetTable /></q-card>
+      <q-card style="height: 320px" class="col-12"><LogTable /></q-card>
     </div>
   </div>
-  <!-- <table>
-    <tr>
-      <th>Publish</th>
-      <th>Subscribe</th>
-    </tr>
-    <tr>
-      <td class="config">
-      </td>
-      <td class="table top-align" colspan="1">
-        <EthernetTable />
-      </td>
-    </tr>
-    <tr>
-      <td class="config">
-        <LogConfig />
-      </td>
-      <td class="table top-align">
-        <LogTable />
-      </td>
-    </tr>
-  </table> -->
 </template>
 <script setup lang="ts">
 import EthernetConfig from '@/components/EthernetConfig.vue'
