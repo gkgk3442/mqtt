@@ -1,0 +1,141 @@
+// div[role="listbox"]
+//     z-index: 6003
+
+// div.q-dialog.fullscreen.no-pointer-events.q-dialog--modal
+//     z-index: 6002
+
+@font-face {
+  font-family: 'NanumGothic';
+  src: url(/fonts/NanumGothic/NanumGothic-Regular.ttf);
+}
+
+.q-notifications__list--top {
+  top: 50px !important;
+}
+
+.q-notifications__list--bottom {
+  bottom: 50px !important;
+}
+.body--light {
+  .q-header{
+    background-color: $primary;
+  }
+  .q-footer {
+    background-color: $secondary !important;
+    color: $dark;
+  }
+
+  .q-page {
+    // background-color: #f6f6f6 !important;
+    background-color: #fff !important;
+  }
+
+  .q-drawer {
+    background-color: $secondary !important;
+
+    .q-item.q-router-link--active,
+    .q-item--active {
+      background: #1a9bf2 !important;
+      color: #FFF !important;
+    }
+
+    .q-item {
+      color: #6a6a6a !important;
+    }
+  }
+
+  .q-card {
+    .card-header {
+      background-color: $primary !important;
+    }
+  }
+
+  // .q-tab--active {
+  //   background: $grey-4 !important;
+  // }
+
+  .q-expansion-item {
+    .q-item {
+      background-color: $primary !important;
+      color: #ffffff !important;
+    }
+  }
+}
+
+.body--dark {
+  .q-header,
+  .q-footer {
+    background-color: $dark !important;
+  }
+
+  .q-drawer {
+    background-color: $dark !important;
+
+    .q-item.q-router-link--active,
+    .q-item--active {
+      background: $blue-5 !important;
+      color: $blue-3 !important;
+    }
+
+    .q-item {
+      color: #ffffff !important;
+    }
+  }
+
+  .q-card {
+    .card-header {
+      background-color: $grey-8 !important;
+    }
+  }
+
+  .q-tab--active {
+    background: $blue-5 !important;
+    color: $blue-3 !important;
+  }
+
+  .q-expansion-item {
+    .q-item {
+      background-color: $grey-8 !important;
+      color: #ffffff !important;
+    }
+  }
+}
+
+//=========================================================
+/* ... */
+.auth-form {
+  width: 100% !important;
+  max-width: 350px !important;
+}
+
+.auth-logo {
+  width: 180px !important;
+  height: auto !important;
+}
+
+.auth-logo-fix {
+  position: fixed !important;
+  top: 80px !important;
+  right: 30px !important;
+}
+
+.bg-minor {
+  background-color: #f9b500 !important;
+}
+.text-minor {
+  color: #f9b500 !important;
+}
+
+.bg-major {
+  background-color: #f78040 !important;
+}
+
+.text-major {
+  color: #f78040 !important;
+}
+.bg-critical {
+  background-color: #f6513e !important;
+}
+.text-critical {
+  color: #f6513e !important;
+}

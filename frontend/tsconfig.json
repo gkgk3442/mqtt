@@ -1,0 +1,48 @@
+// {
+//   "compilerOptions": {
+//     "target": "ESNext",
+//     "useDefineForClassFields": true,
+//     "module": "ESNext",
+//     "moduleResolution": "Node",
+//     "strict": true,
+//     "jsx": "preserve",
+//     "sourceMap": true,
+//     "resolveJsonModule": true,
+//     "isolatedModules": true,
+//     "esModuleInterop": true,
+//     "lib": ["ESNext", "DOM"],
+//     "skipLibCheck": true,
+//     "typeRoots": ["./types"],
+//     "declaration": true,
+//     "declarationDir": "./types"
+//   },
+//   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
+//   "references": [{ "path": "./tsconfig.node.json" }]
+// }
+{
+  "extends": "@vue/tsconfig/tsconfig.web.json",
+  "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+      // "quasar": ["./src/types/quasar.d.ts"],
+      // "*": [
+      //   "node_modules/*"
+      // ]
+    },
+    // "target": "ES2020",
+    // "module": "ES2020",
+    "lib": ["DOM", "ES2019"],
+    "typeRoots": ["./types"],
+    "declaration": true,
+    "declarationDir": "./types",
+    "esModuleInterop": true
+  },
+
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ]
+}
