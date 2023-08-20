@@ -20,7 +20,7 @@
 //   "references": [{ "path": "./tsconfig.node.json" }]
 // }
 {
-  "extends": "@vue/tsconfig/tsconfig.web.json",
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
   "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
   "compilerOptions": {
     "baseUrl": ".",
@@ -36,8 +36,7 @@
     "lib": ["DOM", "ES2019"],
     "typeRoots": ["./types"],
     "declaration": true,
-    "declarationDir": "./types",
-    "esModuleInterop": true
+    "declarationDir": "./types"
   },
 
   "references": [

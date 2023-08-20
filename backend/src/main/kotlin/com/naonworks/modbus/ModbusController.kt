@@ -5,11 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.naonworks.config.rest.RestError
 import com.naonworks.modbus.dto.ModbusEthernetDto
+import com.naonworks.modbus.dto.ModbusEthernetRequest
 import com.naonworks.modbus.dto.ModbusLogDto
+import com.naonworks.modbus.dto.ModbusLogRequest
 import com.naonworks.mqtt.MqttService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -18,6 +21,7 @@ import org.springframework.validation.BeanPropertyBindingResult
 import org.springframework.validation.SmartValidator
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ServerWebExchange
+import java.util.*
 
 @Tag(name = "MODBUS")
 @RestController
@@ -31,6 +35,39 @@ class ModbusController(
     private val MODBUS_ETHERNET_TOPIC = "modbus_ethernet"
     private val MODBUS_LOG_TOPIC = "modbus_log"
 
+    @Operation(summary = "test")
+    @PostMapping(
+        path = ["/test"],
+        consumes = [MediaType.APPLICATION_JSON_VALUE],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    suspend fun test(
+        exchange: ServerWebExchange,
+
+        @RequestBody
+        @JsonFormat
+        body: ModbusEthernetRequest,
+    ): ResponseEntity<Any> {
+        log.debug("body : {}", body)
+        val topic = UUID.randomUUID().toString()
+
+        val json = objectMapper.writeValueAsString(body)
+
+        val flowDto = service.subscribe(topic)
+            .map {
+                val payloadString = String(it.payload)
+                log.debug("subscribe topic : ${topic}, payload : ${payloadString}")
+
+                objectMapper.readValue<ModbusEthernetRequest>(payloadString)
+            }
+
+        service.publish(topic, json)
+
+        val dto = flowDto.firstOrNull()
+
+        return dto?.let { ResponseEntity.ok(it) } ?: ResponseEntity.internalServerError().build()
+    }
+
     @Operation(summary = "publish - 이더넷 설정")
     @PostMapping(
         path = ["/ethernet"],
@@ -42,7 +79,7 @@ class ModbusController(
 
         @RequestBody
         @JsonFormat
-        body: ModbusEthernetDto,
+        body: ModbusEthernetRequest,
     ): ResponseEntity<Any> {
         val e = BeanPropertyBindingResult(body, "")
 
@@ -51,7 +88,7 @@ class ModbusController(
         validator.validate(body, e)
 
         if (!e.hasErrors()) {
-            val json = objectMapper.writeValueAsString(body)
+            val json = objectMapper.writeValueAsString(body.toDto())
 
             log.debug("publish payload : ${json}")
 
@@ -91,7 +128,7 @@ class ModbusController(
 
         @RequestBody
         @JsonFormat
-        body: ModbusLogDto,
+        body: ModbusLogRequest,
     ): ResponseEntity<Any> {
         val e = BeanPropertyBindingResult(body, "")
 
@@ -100,7 +137,7 @@ class ModbusController(
         validator.validate(body, e)
 
         if (!e.hasErrors()) {
-            val json = objectMapper.writeValueAsString(body)
+            val json = objectMapper.writeValueAsString(body.toDto())
 
             log.debug("publish payload : ${json}")
 
