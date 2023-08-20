@@ -30,8 +30,11 @@ const useFormValid = (e: AxiosError, formError: Ref<Record<string, any>>) => {
 
           if (v.code !== undefined && v.arguments !== undefined) {
             message = `error.${v.code} : ${v.arguments.reverse()}`
+            // message = `error.${v.code} : ${v.arguments.reverse()}`
           } else if (v.code !== undefined) {
             message = `error.${v.code}`
+            if (v.code === 'NotBlank') message = 'Field cannot be empty.'
+            if (v.code === 'NotNull') message = 'Field cannot be empty.'
           } else if (v.message !== undefined) {
             message = v.message
           }

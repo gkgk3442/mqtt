@@ -2,7 +2,7 @@
   <div class="row q-pa-sm q-col-gutter-sm">
     <div class="q-gutter-y-sm col-lg col-12">
       <q-card class="col-12 text-center text-h6 bg-primary text-white">Publish</q-card>
-      <q-card style="height: 320px" class="col-12 q-pa-lg"><EthernetConfig /></q-card>
+      <q-card style="height: fit-content" class="col-12 q-pa-lg"><EthernetConfig /></q-card>
       <q-card style="height: 320px" class="col-12 q-pa-lg"><LogConfig /></q-card>
     </div>
     <div class="q-gutter-y-sm col-lg col-12">
