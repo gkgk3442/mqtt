@@ -1,14 +1,14 @@
 <template>
   <div class="input-left-label row items-center q-pb-sm">
-    <div :class="toggle ? 'col-shrink' : 'col-3'">
+    <!-- <div :class="toggle ? 'col-shrink' : 'col-3'">
       <span class="text-weight-bold" :class="{ 'text-grey-5': $q.dark.isActive }">{{ label }}</span>
       <span v-if="required" class="text-weight-bold text-negative q-pr-xs">*</span>
-    </div>
+    </div> -->
 
     <q-input
       class="col-grow"
       ref="inputRef"
-      label-slot
+      :label="label"
       v-if="input === 'input' && options === undefined && !toggle && !useSlot && accept === undefined && type !== 'file' && !span && !error"
       :model-value="modelValue"
       @change="(v: any) => $emit('update:modelValue', v)"
@@ -31,7 +31,7 @@
     <q-input
       class="col-grow input"
       ref="inputRef"
-      label-slot
+      :label="label"
       v-if="input === 'input' && options === undefined && !toggle && !useSlot && accept === undefined && type !== 'file' && !span && error"
       :model-value="modelValue"
       @change="(v: any) => $emit('update:modelValue', v)"
@@ -79,7 +79,6 @@
       hide-bottom-space
     >
       <template #prepend> <q-icon v-if="icon !== undefined" :name="icon" /> </template>
-      <template #label></template>
     </q-select>
 
     <q-file
@@ -186,26 +185,4 @@ onMounted(() => eventMounted(true))
 onUnmounted(() => eventMounted(false))
 </script>
 
-<style lang="scss" scoped>
-.input-left-label :deep(.q-field--labeled.q-field--dense .q-field__native) {
-  padding-top: 0;
-  padding-bottom: 0;
-  height: 30px;
-}
-
-.input-left-label :deep(.q-field--auto-height.q-field--dense.q-field--labeled .q-field__control-container) {
-  padding-top: 0;
-  padding-bottom: 0;
-  height: 30px;
-}
-
-// .input-left-label > .q-field {
-//   height: 30px;
-//   max-width: 200px;
-// }
-
-// .input-left-label > :deep(.q-field--dense .q-field__control) {
-//   height: 30px;
-//   max-width: 200px;
-// }
-</style>
+<style lang="scss" scoped></style>

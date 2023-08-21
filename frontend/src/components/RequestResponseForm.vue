@@ -13,7 +13,7 @@
       <div class="col-md-5 col-10">
         <q-card>
           <q-card-section class="bg-primary text-white text-center text-h6 q-pa-none">Response</q-card-section>
-          <q-input input-style="min-height: 220px" v-model="resTextArea" type="textarea" outlined square />
+          <q-input disable input-style="min-height: 220px" v-model="resTextArea" type="textarea" outlined square />
         </q-card>
       </div>
     </div>

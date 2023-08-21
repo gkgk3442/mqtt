@@ -5,13 +5,13 @@
   <div class="row q-pa-md q-col-gutter-sm">
     <div class="row col-md-6 col-12">
       <q-card class="col-12 text-center text-h6 bg-primary text-white">Publish</q-card>
-      <q-card style="height: 320px" class="col-12 q-pa-lg q-mb-sm"><EthernetConfig /></q-card>
-      <q-card style="height: 320px" class="col-12 q-pa-lg"><LogConfig /></q-card>
+      <q-card style="min-height: 320px" class="col-12 q-pa-lg q-mb-sm"><EthernetConfig /></q-card>
+      <q-card style="min-height: 320px" class="col-12 q-pa-lg"><LogConfig /></q-card>
     </div>
     <div class="row col-md-6 col-12">
       <q-card class="col-12 text-center text-h6 bg-primary text-white">Subscribe</q-card>
-      <q-card style="height: 320px" class="col-12 q-mb-sm"><EthernetTable /></q-card>
-      <q-card style="height: 320px" class="col-12"><LogTable /></q-card>
+      <q-card style="min-height: 320px" class="col-12 q-mb-sm"><EthernetTable /></q-card>
+      <q-card style="min-height: 320px" class="col-12"><LogTable /></q-card>
     </div>
   </div>
 </template>

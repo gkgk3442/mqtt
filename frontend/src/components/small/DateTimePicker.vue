@@ -1,8 +1,5 @@
 <template>
   <div class="row q-pb-sm items-center">
-    <div class="col-3">
-      <span class="text-weight-bold" :class="{ 'text-grey-5': $q.dark.isActive }">Date</span>
-    </div>
     <q-input
       class="col-grow"
       outlined
@@ -25,9 +22,6 @@
     </q-input>
   </div>
   <div class="row q-pb-sm items-center">
-    <div class="col-3">
-      <span class="text-weight-bold" :class="{ 'text-grey-5': $q.dark.isActive }">Time</span>
-    </div>
     <q-input
       class="col-grow"
       square
