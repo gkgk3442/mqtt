@@ -49,24 +49,16 @@ class ModbusController(
         body: String,
     ): ResponseEntity<Any> {
         log.debug("body : {}", body)
+        
         val topic = service.genReqTopic()
 
         val flowDto = service.subscribe(topic)
             .map {
                 String(it.second.payload)
             }
-//        val flowDto = CoroutineScope(Dispatchers.IO).async {
-//            service.subscribe(topic)
-//                .map {
-//                    String(it.second.payload)
-//                }
-//                .firstOrNull()
-//        }
-//        flowDto.start()
 
         service.publish(topic, body.toByteArray())
 
-//        val dto = flowDto.await()
         val dto = flowDto.firstOrNull()
 
         return dto?.let { ResponseEntity.ok(it) } ?: ResponseEntity.internalServerError().build()
