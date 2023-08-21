@@ -39,7 +39,7 @@ const toJson = (str: string) => {
 const onClkSubmit = async () => {
   const json = toJson(reqTextArea.value)
   if (json) {
-    const res = await postWithProgress(json, '/api/modbus/req-res')
+    const res = await postWithProgress(json, '/api/modbus/req-rep')
     resTextArea.value = JSON.stringify(res)
   } else {
     Notify.create({

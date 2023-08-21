@@ -33,6 +33,9 @@ export const postWithProgress = async (v: any, url?: string) => {
   })
 
   const config = {
+    headers: {
+      'Content-Type': 'application/json',
+    },
     onUploadProgress: (progressEvent: AxiosProgressEvent) => {
       if (progressEvent.total !== undefined) {
         const progress = Math.round((progressEvent.loaded / progressEvent?.total) * 100)
