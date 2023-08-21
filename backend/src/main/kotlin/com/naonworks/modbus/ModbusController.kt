@@ -11,9 +11,6 @@ import com.naonworks.modbus.dto.ModbusLogRequest
 import com.naonworks.mqtt.MqttService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
@@ -54,19 +51,23 @@ class ModbusController(
         log.debug("body : {}", body)
         val topic = service.genReqTopic()
 
-        val flowDto = CoroutineScope(Dispatchers.IO).async {
-            service.subscribe(topic)
-                .map {
-                    String(it.second.payload)
-                }.firstOrNull()
-        }
-
-        flowDto.start()
+        val flowDto = service.subscribe(topic)
+            .map {
+                String(it.second.payload)
+            }
+//        val flowDto = CoroutineScope(Dispatchers.IO).async {
+//            service.subscribe(topic)
+//                .map {
+//                    String(it.second.payload)
+//                }
+//                .firstOrNull()
+//        }
+//        flowDto.start()
 
         service.publish(topic, body.toByteArray())
 
-        val dto = flowDto.await()
-//        val dto = flowDto.firstOrNull()
+//        val dto = flowDto.await()
+        val dto = flowDto.firstOrNull()
 
         return dto?.let { ResponseEntity.ok(it) } ?: ResponseEntity.internalServerError().build()
     }
