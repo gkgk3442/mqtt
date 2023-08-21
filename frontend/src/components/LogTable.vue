@@ -16,7 +16,7 @@ const rows = ref<IData[]>([])
 
 const { data } = useSse('/api/modbus/log')
 const columns = ref([
-  { name: 'datetime', field: 'datetime', label: 'Date/Time', format: (v) => customTimezoneDispFormat(v) },
+  { name: 'datetime', field: 'datetime', label: 'Date/Time', format: (v: string) => customTimezoneDispFormat(v) },
   {
     name: 'level',
     field: 'level',
