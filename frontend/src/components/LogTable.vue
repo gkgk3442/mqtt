@@ -20,7 +20,6 @@ const columns = ref([
     name: 'level',
     field: 'level',
     label: 'Level',
-
     format: (v: number) => {
       if (v === 0) {
         return 'TRACE'
