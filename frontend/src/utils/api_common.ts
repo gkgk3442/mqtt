@@ -50,7 +50,7 @@ export const postWithProgress = async (v: any, url?: string) => {
   }
 
   try {
-    await axios.post(url, v, config)
+    const res = await axios.post(url, v, config)
 
     Notify.create({
       type: 'positive',
@@ -59,6 +59,7 @@ export const postWithProgress = async (v: any, url?: string) => {
       timeout: 1000,
       message: 'success!',
     })
+    return res.data
   } catch (e) {
     if (e instanceof AxiosError) {
       Notify.create({
