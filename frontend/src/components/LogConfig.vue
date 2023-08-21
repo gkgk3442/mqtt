@@ -1,13 +1,12 @@
 <template>
   <q-form @submit.prevent="onClkSubmit">
-    <!-- <DateTimePicker @update="(v) => updateTime(v)" :init="start" /> -->
     <q-input class="col-grow q-pb-md" outlined dense debounce="500" v-model="form.date" mask="####-##-##" label="Start Date">
       <template #append>
         <q-icon name="event" class="cursor-pointer" />
         <q-popup-proxy ref="qDateRef" self="top middle" anchor="bottom end" breakpoint="750" transition-show="scale" transition-hide="scale">
-          <q-date minimal no-unset v-model="form.date" mask="YYYY-MM-DD"
-            ><div class="row items-center justify-end"><q-btn v-close-popup label="Close" color="primary" flat /></div
-          ></q-date>
+          <q-date minimal no-unset v-model="form.date" mask="YYYY-MM-DD">
+            <div class="row items-center justify-end"><q-btn v-close-popup label="Close" color="primary" flat /></div>
+          </q-date>
         </q-popup-proxy>
       </template>
     </q-input>
@@ -33,9 +32,7 @@
       :options="levelOptions"
     />
     <q-input outlined v-model="form.description" :error="formError.description.length > 0" :error-message="formError.description" dense number label="Description" />
-    <!-- <div class="full-width row reverse"> -->
     <q-btn dense color="primary" size="md" label="apply" type="submit" />
-    <!-- </div> -->
   </q-form>
 </template>
 <script setup lang="ts">
