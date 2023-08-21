@@ -1,5 +1,5 @@
 import type { AxiosProgressEvent } from 'axios'
-import axios from 'axios'
+import axios, { Axios, AxiosError } from 'axios'
 import { Dialog, Notify } from 'quasar'
 import queryString from 'query-string'
 
@@ -57,13 +57,15 @@ export const postWithProgress = async (v: any, url?: string) => {
       message: 'success!',
     })
   } catch (e) {
-    Notify.create({
-      type: 'negative',
-      position: 'top-right',
-      group: false,
-      timeout: 1000,
-      message: 'invalid!',
-    })
+    if (e instanceof AxiosError) {
+      Notify.create({
+        type: 'negative',
+        position: 'top-right',
+        group: false,
+        timeout: 1000,
+        message: e.message,
+      })
+    }
     throw e
   }
 }
