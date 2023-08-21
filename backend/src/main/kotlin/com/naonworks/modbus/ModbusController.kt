@@ -21,7 +21,6 @@ import org.springframework.validation.BeanPropertyBindingResult
 import org.springframework.validation.SmartValidator
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ServerWebExchange
-import java.util.*
 
 @Tag(name = "MODBUS")
 @RestController
@@ -32,36 +31,32 @@ class ModbusController(
     private val validator: SmartValidator,
 ) {
     private val log = org.slf4j.LoggerFactory.getLogger(this::class.java)
+
     private val MODBUS_ETHERNET_TOPIC = "modbus_ethernet"
     private val MODBUS_LOG_TOPIC = "modbus_log"
 
-    @Operation(summary = "test")
+    @Operation(summary = "req-rep")
     @PostMapping(
-        path = ["/test"],
+        path = ["/req-rep"],
         consumes = [MediaType.APPLICATION_JSON_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
-    suspend fun test(
+    suspend fun reqRep(
         exchange: ServerWebExchange,
 
         @RequestBody
         @JsonFormat
-        body: ModbusEthernetRequest,
+        body: String,
     ): ResponseEntity<Any> {
         log.debug("body : {}", body)
-        val topic = UUID.randomUUID().toString()
-
-        val json = objectMapper.writeValueAsString(body)
+        val topic = service.genReqTopic()
 
         val flowDto = service.subscribe(topic)
             .map {
-                val payloadString = String(it.payload)
-                log.debug("subscribe topic : ${topic}, payload : ${payloadString}")
-
-                objectMapper.readValue<ModbusEthernetRequest>(payloadString)
+                String(it.second.payload)
             }
 
-        service.publish(topic, json)
+        service.publish(topic, body.toByteArray())
 
         val dto = flowDto.firstOrNull()
 
@@ -90,9 +85,7 @@ class ModbusController(
         if (!e.hasErrors()) {
             val json = objectMapper.writeValueAsString(body.toDto())
 
-            log.debug("publish payload : ${json}")
-
-            if (!service.publish(MODBUS_ETHERNET_TOPIC, json))
+            if (!service.publish(MODBUS_ETHERNET_TOPIC, json.toByteArray()))
                 return ResponseEntity.internalServerError().build()
         }
 
@@ -109,9 +102,7 @@ class ModbusController(
     ): Flow<ServerSentEvent<ModbusEthernetDto>> {
         return service.subscribe(MODBUS_ETHERNET_TOPIC)
             .map {
-                val payloadString = String(it.payload)
-                log.debug("subscribe topic : ${MODBUS_ETHERNET_TOPIC}, payload : ${payloadString}")
-
+                val payloadString = String(it.second.payload)
                 val dto = objectMapper.readValue<ModbusEthernetDto>(payloadString)
                 ServerSentEvent.builder(dto).build()
             }
@@ -139,9 +130,7 @@ class ModbusController(
         if (!e.hasErrors()) {
             val json = objectMapper.writeValueAsString(body.toDto())
 
-            log.debug("publish payload : ${json}")
-
-            if (!service.publish(MODBUS_LOG_TOPIC, json))
+            if (!service.publish(MODBUS_LOG_TOPIC, json.toByteArray()))
                 return ResponseEntity.internalServerError().build()
         }
 
@@ -158,9 +147,7 @@ class ModbusController(
     ): Flow<ServerSentEvent<ModbusLogDto>> {
         return service.subscribe(MODBUS_LOG_TOPIC)
             .map {
-                val payloadString = String(it.payload)
-                log.debug("subscribe topic : ${MODBUS_LOG_TOPIC}, payload : ${payloadString}")
-
+                val payloadString = String(it.second.payload)
                 val dto = objectMapper.readValue<ModbusLogDto>(payloadString)
                 ServerSentEvent.builder(dto).build()
             }
