@@ -35,9 +35,11 @@ const { form, formError, submit } = useModalForm({
   submit: {
     url: '/api/modbus/log',
     handleRequest: (v) => {
-      const validDate = dayjs(v.datetime, 'YYYY-MM-DDTHH:mm:ss.SSSZ').tz(dayjs.tz.guess()).isValid()
+      const timezone = dayjs.tz.guess()
 
-      return { ...v, datetime: validDate ? validDate : dayjs(v.datetime).tz(dayjs.tz.guess()).format('YYYY-MM-DDTHH:mm:ss.SSSZ') }
+      const validDate = dayjs(v.datetime, 'YYYY-MM-DDTHH:mm:ss.SSSZ').tz(timezone).isValid()
+
+      return { ...v, datetime: validDate ? validDate : dayjs(v.datetime).tz(timezone).format('YYYY-MM-DDTHH:mm:ss.SSSZ') }
     },
   },
 })

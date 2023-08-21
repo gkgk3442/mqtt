@@ -5,11 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.naonworks.config.rest.RestError
 import com.naonworks.modbus.dto.ModbusEthernetDto
+import com.naonworks.modbus.dto.ModbusEthernetRequest
 import com.naonworks.modbus.dto.ModbusLogDto
+import com.naonworks.modbus.dto.ModbusLogRequest
 import com.naonworks.mqtt.MqttService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -28,8 +31,37 @@ class ModbusController(
     private val validator: SmartValidator,
 ) {
     private val log = org.slf4j.LoggerFactory.getLogger(this::class.java)
+
     private val MODBUS_ETHERNET_TOPIC = "modbus_ethernet"
     private val MODBUS_LOG_TOPIC = "modbus_log"
+
+    @Operation(summary = "req-rep")
+    @PostMapping(
+        path = ["/req-rep"],
+        consumes = [MediaType.APPLICATION_JSON_VALUE],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    suspend fun reqRep(
+        exchange: ServerWebExchange,
+
+        @RequestBody
+        @JsonFormat
+        body: String,
+    ): ResponseEntity<Any> {
+        log.debug("body : {}", body)
+        val topic = service.genReqTopic()
+
+        val flowDto = service.subscribe(topic)
+            .map {
+                String(it.second.payload)
+            }
+
+        service.publish(topic, body.toByteArray())
+
+        val dto = flowDto.firstOrNull()
+
+        return dto?.let { ResponseEntity.ok(it) } ?: ResponseEntity.internalServerError().build()
+    }
 
     @Operation(summary = "publish - 이더넷 설정")
     @PostMapping(
@@ -42,7 +74,7 @@ class ModbusController(
 
         @RequestBody
         @JsonFormat
-        body: ModbusEthernetDto,
+        body: ModbusEthernetRequest,
     ): ResponseEntity<Any> {
         val e = BeanPropertyBindingResult(body, "")
 
@@ -51,11 +83,9 @@ class ModbusController(
         validator.validate(body, e)
 
         if (!e.hasErrors()) {
-            val json = objectMapper.writeValueAsString(body)
+            val json = objectMapper.writeValueAsString(body.toDto())
 
-            log.debug("publish payload : ${json}")
-
-            if (!service.publish(MODBUS_ETHERNET_TOPIC, json))
+            if (!service.publish(MODBUS_ETHERNET_TOPIC, json.toByteArray()))
                 return ResponseEntity.internalServerError().build()
         }
 
@@ -72,9 +102,7 @@ class ModbusController(
     ): Flow<ServerSentEvent<ModbusEthernetDto>> {
         return service.subscribe(MODBUS_ETHERNET_TOPIC)
             .map {
-                val payloadString = String(it.payload)
-                log.debug("subscribe topic : ${MODBUS_ETHERNET_TOPIC}, payload : ${payloadString}")
-
+                val payloadString = String(it.second.payload)
                 val dto = objectMapper.readValue<ModbusEthernetDto>(payloadString)
                 ServerSentEvent.builder(dto).build()
             }
@@ -91,7 +119,7 @@ class ModbusController(
 
         @RequestBody
         @JsonFormat
-        body: ModbusLogDto,
+        body: ModbusLogRequest,
     ): ResponseEntity<Any> {
         val e = BeanPropertyBindingResult(body, "")
 
@@ -100,11 +128,9 @@ class ModbusController(
         validator.validate(body, e)
 
         if (!e.hasErrors()) {
-            val json = objectMapper.writeValueAsString(body)
+            val json = objectMapper.writeValueAsString(body.toDto())
 
-            log.debug("publish payload : ${json}")
-
-            if (!service.publish(MODBUS_ETHERNET_TOPIC, json))
+            if (!service.publish(MODBUS_LOG_TOPIC, json.toByteArray()))
                 return ResponseEntity.internalServerError().build()
         }
 
@@ -121,9 +147,7 @@ class ModbusController(
     ): Flow<ServerSentEvent<ModbusLogDto>> {
         return service.subscribe(MODBUS_LOG_TOPIC)
             .map {
-                val payloadString = String(it.payload)
-                log.debug("subscribe topic : ${MODBUS_ETHERNET_TOPIC}, payload : ${payloadString}")
-
+                val payloadString = String(it.second.payload)
                 val dto = objectMapper.readValue<ModbusLogDto>(payloadString)
                 ServerSentEvent.builder(dto).build()
             }

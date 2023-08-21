@@ -1,21 +1,9 @@
 <template>
   <q-table dense :columns="columns" :rows="rows" table-header-class="bg-secondary"> </q-table>
-
-  <!-- <table class="table">
-    <tr>
-      <th>datetime</th>
-      <th>level</th>
-      <th>description</th>
-    </tr>
-    <tr v-for="row in rows" :key="`${row.datetime}_${row.level}_${row.description}`">
-      <td>{{ row.datetime }}</td>
-      <td>{{ row.level }}</td>
-      <td>{{ row.description }}</td>
-    </tr>
-  </table> -->
 </template>
 <script setup lang="ts">
 import { useSse } from '@/composables/useSse'
+import { customTimezoneDispFormat } from '@/utils/utils_datetime'
 import { ref, watch } from 'vue'
 
 interface IData {
@@ -28,11 +16,12 @@ const rows = ref<IData[]>([])
 
 const { data } = useSse('/api/modbus/log')
 const columns = ref([
-  { name: 'datetime', field: 'datetime', label: 'Date/Time' },
+  { name: 'datetime', field: 'datetime', label: 'Date/Time', format: (v) => customTimezoneDispFormat(v) },
   {
     name: 'level',
     field: 'level',
     label: 'Level',
+
     format: (v: number) => {
       if (v === 0) {
         return 'TRACE'

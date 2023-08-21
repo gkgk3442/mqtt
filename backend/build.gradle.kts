@@ -30,6 +30,9 @@ tasks.withType<KotlinCompile> {
 }
 
 configurations {
+    configureEach {
+        this.exclude(group = "org.springframework.boot", module = "spring-boot-starter-logging")
+    }
     compileOnly {
         extendsFrom(configurations.annotationProcessor.get())
     }
@@ -40,6 +43,12 @@ repositories {
 }
 
 dependencies {
+    // log4j2
+    implementation("org.springframework.boot:spring-boot-starter-log4j2")
+    implementation("com.lmax:disruptor:3.4.4")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.15.2")
+    implementation("org.yaml:snakeyaml:2.0")
+
     // kotlin
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
