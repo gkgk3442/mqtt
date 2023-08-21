@@ -57,6 +57,13 @@ export const postWithProgress = async (v: any, url?: string) => {
       message: 'success!',
     })
   } catch (e) {
+    Notify.create({
+      type: 'negative',
+      position: 'top-right',
+      group: false,
+      timeout: 1000,
+      message: 'invalid!',
+    })
     throw e
   }
 }

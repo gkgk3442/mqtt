@@ -1,7 +1,7 @@
 <template>
   <q-form @submit.prevent="onClkSubmit()">
     <div class="row q-pa-md">
-      <div class="col-md-5">
+      <div class="col-md-5 col-10">
         <q-card>
           <q-card-section class="bg-primary text-white text-center text-h6 q-pa-none">Request</q-card-section>
           <q-input input-style="min-height: 220px" v-model="reqTextArea" type="textarea" outlined square />
@@ -10,7 +10,7 @@
       <div class="column col-md-2 items-center">
         <q-btn label="Submit" color="primary" type="submit" />
       </div>
-      <div class="col-md-5">
+      <div class="col-md-5 col-10">
         <q-card>
           <q-card-section class="bg-primary text-white text-center text-h6 q-pa-none">Response</q-card-section>
           <q-input input-style="min-height: 220px" v-model="resTextArea" type="textarea" outlined square />
@@ -36,10 +36,10 @@ const toJson = (str: string) => {
   }
 }
 
-const onClkSubmit = () => {
+const onClkSubmit = async () => {
   const json = toJson(reqTextArea.value)
   if (json) {
-    const res = postWithProgress(json, 'REQUEST_URL')
+    const res = await postWithProgress(json, '/api/modbus/req-res')
     resTextArea.value = JSON.stringify(res)
   } else {
     Notify.create({
