@@ -12,18 +12,17 @@
       :error-message="formError.protocol"
     />
     <q-input v-model="form.ip" dense outlined label="IP" :error="formError.ip.length > 0" :error-message="formError.ip" />
-    <q-input v-model="form.port" dense outlined label="Port" type="number" :min="0" :max="65535" :error="formError.port.length > 0" :error-message="formError.port" />
+    <q-input v-model="form.port" dense outlined label="Port" type="number" :error="formError.port.length > 0" :error-message="formError.port" />
     <q-input
       v-model="form.transactionDelay"
       dense
       outlined
       label="Transaction Delay"
       type="number"
-      :max="100"
       :error="formError.transactionDelay.length > 0"
       :error-message="formError.transactionDelay"
     />
-    <q-input v-model="form.timeout" dense outlined label="Timeout" type="number" :max="3000" :error="formError.timeout.length > 0" :error-message="formError.timeout" />
+    <q-input v-model="form.timeout" dense outlined label="Timeout" type="number" :error="formError.timeout.length > 0" :error-message="formError.timeout" />
 
     <q-btn dense color="primary" size="md" label="apply" type="submit" />
   </q-form>
