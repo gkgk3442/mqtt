@@ -3,7 +3,6 @@
 </template>
 <script setup lang="ts">
 import { useSse } from '@/composables/useSse'
-import { customTimezoneDispFormat } from '@/utils/utils_datetime'
 import { ref, watch } from 'vue'
 
 interface IData {
@@ -16,7 +15,7 @@ const rows = ref<IData[]>([])
 
 const { data } = useSse('/api/modbus/log')
 const columns = ref([
-  { name: 'datetime', field: 'datetime', label: 'Date/Time', format: (v: string) => customTimezoneDispFormat(v) },
+  { name: 'datetime', field: 'datetime', label: 'Date/Time' },
   {
     name: 'level',
     field: 'level',
