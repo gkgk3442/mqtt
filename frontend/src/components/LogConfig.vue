@@ -1,7 +1,7 @@
 <template>
   <q-form @submit.prevent="onClkSubmit">
     <!-- <DateTimePicker @update="(v) => updateTime(v)" :init="start" /> -->
-    <q-input class="col-grow" outlined dense debounce="500" v-model="form.date" mask="####-##-##" label="Start Date">
+    <q-input class="col-grow q-pb-md" outlined dense debounce="500" v-model="form.date" mask="####-##-##" label="Start Date">
       <template #append>
         <q-icon name="event" class="cursor-pointer" />
         <q-popup-proxy ref="qDateRef" self="top middle" anchor="bottom end" breakpoint="750" transition-show="scale" transition-hide="scale">
@@ -11,7 +11,7 @@
         </q-popup-proxy>
       </template>
     </q-input>
-    <q-input class="col-grow" outlined dense debounce="500" v-model="form.time" mask="##:##:##" label="Start Time">
+    <q-input class="col-grow q-pb-md" outlined dense debounce="500" v-model="form.time" mask="##:##:##" label="Start Time">
       <template #append>
         <q-icon name="schedule" class="cursor-pointer" />
         <q-popup-proxy ref="qTimeRef" self="top middle" anchor="bottom end" breakpoint="750" transition-show="scale" transition-hide="scale">
@@ -21,7 +21,17 @@
         </q-popup-proxy>
       </template>
     </q-input>
-    <q-input outlined v-model="form.level" :error="formError.level.length > 0" dense label="Level" :error-message="formError.level" :options="levelOptions" />
+    <q-select
+      map-options
+      emit-value
+      outlined
+      v-model="form.level"
+      :error="formError.level.length > 0"
+      dense
+      label="Level"
+      :error-message="formError.level"
+      :options="levelOptions"
+    />
     <q-input outlined v-model="form.description" :error="formError.description.length > 0" :error-message="formError.description" dense number label="Description" />
     <!-- <div class="full-width row reverse"> -->
     <q-btn dense color="primary" size="md" label="apply" type="submit" />
@@ -45,12 +55,12 @@ const levelOptions = [
   { label: 'FATAL', value: 5 },
 ]
 
-const form = ref({ date: dayjs(dayjs(), 'YYYY-MM-DD').toString(), time: dayjs(dayjs(), 'HH:mm:ss').toString(), level: 0, description: '' })
+const form = ref({ date: dayjs().format('YYYY-MM-DD').toString(), time: dayjs().format('HH:mm:ss').toString(), level: 0, description: '' })
 const formError = ref({ date: '', time: '', level: '', description: '' })
 
 const onClkSubmit = async () => {
   try {
-    await post(form.value, '/api/modbus/ethernet')
+    await post(form.value, '/api/modbus/log')
   } catch (e) {
     if (axios.isAxiosError(e)) {
       useFormValid(e, formError)

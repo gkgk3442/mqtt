@@ -1,5 +1,5 @@
 import type { AxiosProgressEvent } from 'axios'
-import axios, { Axios, AxiosError } from 'axios'
+import axios, { AxiosError } from 'axios'
 import { Dialog, Notify } from 'quasar'
 import queryString from 'query-string'
 
