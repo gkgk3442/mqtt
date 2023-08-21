@@ -1,10 +1,5 @@
 <template>
   <div class="input-left-label row items-center q-pb-sm">
-    <!-- <div :class="toggle ? 'col-shrink' : 'col-3'">
-      <span class="text-weight-bold" :class="{ 'text-grey-5': $q.dark.isActive }">{{ label }}</span>
-      <span v-if="required" class="text-weight-bold text-negative q-pr-xs">*</span>
-    </div> -->
-
     <q-input
       class="col-grow"
       ref="inputRef"
@@ -22,12 +17,7 @@
       square
     >
       <template #prepend> <q-icon v-if="icon !== undefined" :name="icon" /> </template>
-      <!-- <template #label></template>    -->
     </q-input>
-    <!-- <div v-if="span" style="height: 40px; display: flex; align-items: center" class="col-5"> -->
-    <!-- <div style="height: 40px; display: flex; align-items: center; overflow-x:auto" class="col-5"> -->
-    <!-- <span v-if="span">{{ modelValue }}</span> -->
-    <!-- </div> -->
     <q-input
       class="col-grow input"
       ref="inputRef"
@@ -47,7 +37,6 @@
       square
     >
       <template #prepend> <q-icon v-if="icon !== undefined" :name="icon" /> </template>
-      <!-- <template #label></template>    -->
     </q-input>
     <div v-if="toggle" full-width>
       <q-toggle :model-value="modelValue" size="lg" :color="!$q.dark.isActive ? 'primary' : 'blue-2'" @update:model-value="(v: any) => $emit('update:modelValue', v)" />
@@ -55,7 +44,6 @@
     <slot v-if="useSlot"></slot>
     <slot v-if="useSlot"></slot>
     <div v-if="span" style="height: 30px; display: flex; align-items: center" class="col-5">
-      <!-- <div style="height: 40px; display: flex; align-items: center; overflow-x:auto" class="col-5"> -->
       <span v-if="span">{{ modelValue }}</span>
     </div>
 

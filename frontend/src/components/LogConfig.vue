@@ -1,25 +1,40 @@
 <template>
   <q-form @submit.prevent="onClkSubmit">
-    <DateTimePicker @update="(v) => updateTime(v)" :init="start" />
-    <InputLeftLabel v-model="form.level" :error="formError.level" dense label="Level" :options="levelOptions" />
-    <InputLeftLabel v-model="form.description" :error="formError.description" dense number label="Description" />
+    <!-- <DateTimePicker @update="(v) => updateTime(v)" :init="start" /> -->
+    <q-input class="col-grow" outlined dense debounce="500" v-model="form.date" mask="####-##-##" label="Start Date">
+      <template #append>
+        <q-icon name="event" class="cursor-pointer" />
+        <q-popup-proxy ref="qDateRef" self="top middle" anchor="bottom end" breakpoint="750" transition-show="scale" transition-hide="scale">
+          <q-date minimal no-unset v-model="form.date" mask="YYYY-MM-DD"
+            ><div class="row items-center justify-end"><q-btn v-close-popup label="Close" color="primary" flat /></div
+          ></q-date>
+        </q-popup-proxy>
+      </template>
+    </q-input>
+    <q-input class="col-grow" outlined dense debounce="500" v-model="form.time" mask="##:##:##" label="Start Time">
+      <template #append>
+        <q-icon name="schedule" class="cursor-pointer" />
+        <q-popup-proxy ref="qTimeRef" self="top middle" anchor="bottom end" breakpoint="750" transition-show="scale" transition-hide="scale">
+          <q-time v-model="form.time" with-seconds mask="HH:mm:ss" format24h>
+            <div class="row items-center justify-end"><q-btn v-close-popup label="Close" color="primary" flat /></div>
+          </q-time>
+        </q-popup-proxy>
+      </template>
+    </q-input>
+    <q-input outlined v-model="form.level" :error="formError.level.length > 0" dense label="Level" :error-message="formError.level" :options="levelOptions" />
+    <q-input outlined v-model="form.description" :error="formError.description.length > 0" :error-message="formError.description" dense number label="Description" />
     <!-- <div class="full-width row reverse"> -->
     <q-btn dense color="primary" size="md" label="apply" type="submit" />
     <!-- </div> -->
   </q-form>
 </template>
 <script setup lang="ts">
-import DateTimePicker from '@/components/small/DateTimePicker.vue'
-import InputLeftLabel from '@/components/small/InputLeftLabel.vue'
-import { useModalForm } from '@/composables/useModalForm'
 import { post } from '@/utils/api_common'
+import { objectDiffKeys, setObjectValueClear } from '@/utils/utils_global'
+import { useFormValid } from '@/utils/validation'
+import axios from 'axios'
 import dayjs from 'dayjs'
-import customParseFormat from 'dayjs/plugin/customParseFormat'
-import timezone from 'dayjs/plugin/timezone'
-import utc from 'dayjs/plugin/utc'
-dayjs.extend(customParseFormat)
-dayjs.extend(timezone)
-dayjs.extend(utc)
+import { ref, watch } from 'vue'
 
 const levelOptions = [
   { label: 'TRACE', value: 0 },
@@ -30,25 +45,26 @@ const levelOptions = [
   { label: 'FATAL', value: 5 },
 ]
 
-const { form, formError, submit } = useModalForm({
-  formInit: { datetime: dayjs().toString(), level: 0, description: '' },
-  submit: {
-    url: '/api/modbus/log',
-    handleRequest: (v) => {
-      const timezone = dayjs.tz.guess()
+const form = ref({ date: dayjs(dayjs(), 'YYYY-MM-DD').toString(), time: dayjs(dayjs(), 'HH:mm:ss').toString(), level: 0, description: '' })
+const formError = ref({ date: '', time: '', level: '', description: '' })
 
-      const validDate = dayjs(v.datetime, 'YYYY-MM-DDTHH:mm:ss.SSSZ').tz(timezone).isValid()
-
-      return { ...v, datetime: validDate ? validDate : dayjs(v.datetime).tz(timezone).format('YYYY-MM-DDTHH:mm:ss.SSSZ') }
-    },
-  },
-})
-
-const start = dayjs.tz(dayjs()).tz(dayjs.tz.guess()).toString()
-
-const updateTime = (v: { dateTime: string }) => {
-  form.value.datetime = v.dateTime
+const onClkSubmit = async () => {
+  try {
+    await post(form.value, '/api/modbus/ethernet')
+  } catch (e) {
+    if (axios.isAxiosError(e)) {
+      useFormValid(e, formError)
+    } else console.error(e)
+  }
 }
+watch(
+  () => JSON.stringify(form.value),
+  (newVal, oldVal) => {
+    const diffKeyArr = objectDiffKeys(JSON.parse(oldVal), JSON.parse(newVal))
 
-const onClkSubmit = async () => await submit(post)
+    diffKeyArr.forEach((v) => {
+      if (formError.value[v as keyof typeof formError.value] !== undefined) setObjectValueClear(formError.value)
+    })
+  }
+)
 </script>

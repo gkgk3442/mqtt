@@ -1,20 +1,39 @@
 <template>
   <q-form @submit.prevent="onClkSubmit">
-    <InputLeftLabel v-model="form.protocol" :error="formError.protocol" dense label="Protocol" :options="protocolOptions" />
-    <InputLeftLabel v-model="form.ip" :error="formError.ip" dense label="IP" />
-    <InputLeftLabel v-model="form.port" :error="formError.port" dense label="Port" type="number" :min="0" :max="65535" />
-    <InputLeftLabel v-model="form.transactionDelay" :error="formError.transactionDelay" dense label="Transaction Delay" type="number" :max="100" />
-    <InputLeftLabel v-model="form.timeout" :error="formError.timeout" dense label="Timeout" type="number" :max="3000" />
+    <q-select
+      v-model="form.protocol"
+      emit-value
+      map-options
+      dense
+      outlined
+      label="Protocol"
+      :options="protocolOptions"
+      :error="formError.protocol.length > 0"
+      :error-message="formError.protocol"
+    />
+    <q-input v-model="form.ip" dense outlined label="IP" :error="formError.ip.length > 0" :error-message="formError.ip" />
+    <q-input v-model="form.port" dense outlined label="Port" type="number" :min="0" :max="65535" :error="formError.port.length > 0" :error-message="formError.port" />
+    <q-input
+      v-model="form.transactionDelay"
+      dense
+      outlined
+      label="Transaction Delay"
+      type="number"
+      :max="100"
+      :error="formError.transactionDelay.length > 0"
+      :error-message="formError.transactionDelay"
+    />
+    <q-input v-model="form.timeout" dense outlined label="Timeout" type="number" :max="3000" :error="formError.timeout.length > 0" :error-message="formError.timeout" />
 
-    <!-- <div class="full-width row reverse"> -->
     <q-btn dense color="primary" size="md" label="apply" type="submit" />
-    <!-- </div> -->
   </q-form>
 </template>
 <script setup lang="ts">
-import InputLeftLabel from '@/components/small/InputLeftLabel.vue'
-import { useModalForm } from '@/composables/useModalForm'
 import { post } from '@/utils/api_common'
+import { objectDiffKeys, setObjectValueClear } from '@/utils/utils_global'
+import { useFormValid } from '@/utils/validation'
+import axios from 'axios'
+import { ref, watch } from 'vue'
 
 const protocolOptions = [
   { label: 'TCP', value: 0 },
@@ -22,12 +41,27 @@ const protocolOptions = [
   { label: 'ASCII', value: 2 },
 ]
 
-const { form, formError, submit } = useModalForm({
-  formInit: { protocol: 0, ip: '', port: '', transactionDelay: '', timeout: '' },
-  submit: {
-    url: '/api/modbus/ethernet',
-  },
-})
+const form = ref({ protocol: 0, ip: '', port: '', transactionDelay: '', timeout: '' })
+const formError = ref({ protocol: '', ip: '', port: '', transactionDelay: '', timeout: '' })
 
-const onClkSubmit = async () => await submit(post)
+const onClkSubmit = async () => {
+  try {
+    await post(form.value, '/api/modbus/ethernet')
+  } catch (e) {
+    if (axios.isAxiosError(e)) {
+      useFormValid(e, formError)
+    } else console.error(e)
+  }
+}
+
+watch(
+  () => JSON.stringify(form.value),
+  (newVal, oldVal) => {
+    const diffKeyArr = objectDiffKeys(JSON.parse(oldVal), JSON.parse(newVal))
+
+    diffKeyArr.forEach((v) => {
+      if (formError.value[v as keyof typeof formError.value] !== undefined) setObjectValueClear(formError.value)
+    })
+  }
+)
 </script>
