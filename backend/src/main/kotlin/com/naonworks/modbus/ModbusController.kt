@@ -46,18 +46,21 @@ class ModbusController(
 
         @RequestBody
         @JsonFormat
-        body: String,
+        body: Any,
     ): ResponseEntity<Any> {
         log.debug("body : {}", body)
-        
+
         val topic = service.genReqTopic()
+
+        val json = objectMapper.writeValueAsString(body)
 
         val flowDto = service.subscribe(topic)
             .map {
-                String(it.second.payload)
+                val payloadString = String(it.second.payload)
+                objectMapper.readValue<Any>(payloadString)
             }
 
-        service.publish(topic, body.toByteArray())
+        service.publish(topic, json.toByteArray())
 
         val dto = flowDto.firstOrNull()
 
