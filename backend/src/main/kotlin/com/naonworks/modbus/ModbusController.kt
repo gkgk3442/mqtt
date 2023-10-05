@@ -1,159 +1,182 @@
 package com.naonworks.modbus
 
-import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.naonworks.config.rest.RestError
-import com.naonworks.modbus.dto.ModbusEthernetDto
-import com.naonworks.modbus.dto.ModbusEthernetRequest
-import com.naonworks.modbus.dto.ModbusLogDto
-import com.naonworks.modbus.dto.ModbusLogRequest
 import com.naonworks.mqtt.MqttService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.http.codec.ServerSentEvent
-import org.springframework.validation.BeanPropertyBindingResult
 import org.springframework.validation.SmartValidator
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ServerWebExchange
+import java.util.*
+import kotlin.random.Random
 
 @Tag(name = "MODBUS")
 @RestController
 @RequestMapping("/api/modbus")
 class ModbusController(
-    private val service: MqttService,
+    private val mqttService: MqttService,
     private val objectMapper: ObjectMapper,
     private val validator: SmartValidator,
 ) {
     private val log = org.slf4j.LoggerFactory.getLogger(this::class.java)
 
-    private val MODBUS_ETHERNET_TOPIC = "modbus_ethernet"
-    private val MODBUS_LOG_TOPIC = "modbus_log"
+    @Operation(summary = "sse system subscribe")
+    @GetMapping(path = ["/sse/system"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
+    suspend fun systemSubscribe(
+        exchange: ServerWebExchange,
+    ): Flow<ServerSentEvent<String>> =
+        mqttService.subscribe("/log/system").map { ServerSentEvent.builder<String>().data(String(it.payload)).build() }
 
-    @Operation(summary = "req-rep")
+    @Operation(summary = "sse trans subscribe")
+    @GetMapping(path = ["/sse/trans"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
+    suspend fun transSubscribe(
+        exchange: ServerWebExchange,
+    ): Flow<ServerSentEvent<String>> =
+        mqttService.subscribe("/log/trans").map { ServerSentEvent.builder<String>().data(String(it.payload)).build() }
+
+    @Operation(summary = "get client id")
+    @GetMapping(path = ["/getClientId"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    suspend fun clientId(
+        exchange: ServerWebExchange,
+    ): ResponseEntity<String> {
+        val byteArr = ByteArray(16)
+
+        Random.nextBytes(byteArr)
+
+        val body = HexFormat.of().formatHex(byteArr)
+
+        return ResponseEntity.ok(body)
+    }
+
+    @Operation(summary = "publish id")
     @PostMapping(
-        path = ["/req-rep"],
+        path = ["/id"],
         consumes = [MediaType.APPLICATION_JSON_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
-    suspend fun reqRep(
+    suspend fun postId(
         exchange: ServerWebExchange,
 
         @RequestBody
-        @JsonFormat
-        body: Any,
-    ): ResponseEntity<Any> {
-        log.debug("body : {}", body)
+        body: String,
+    ): ResponseEntity<String> {
+        mqttService.publish("/id", body.toByteArray())
 
-        val topic = service.genReqTopic()
-
-        val json = objectMapper.writeValueAsString(body)
-
-        val flowDto = service.subscribe(topic)
-            .map {
-                val payloadString = String(it.second.payload)
-                objectMapper.readValue<Any>(payloadString)
-            }
-
-        service.publish(topic, json.toByteArray())
-
-        val dto = flowDto.firstOrNull()
-
-        return dto?.let { ResponseEntity.ok(it) } ?: ResponseEntity.internalServerError().build()
+        return ResponseEntity.ok("Express")
     }
 
-    @Operation(summary = "publish - 이더넷 설정")
+    @Operation(summary = "publish exit")
     @PostMapping(
-        path = ["/ethernet"],
+        path = ["/exit"],
         consumes = [MediaType.APPLICATION_JSON_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
-    suspend fun publishEthernet(
+    suspend fun postExit(
         exchange: ServerWebExchange,
 
         @RequestBody
-        @JsonFormat
-        body: ModbusEthernetRequest,
-    ): ResponseEntity<Any> {
-        val e = BeanPropertyBindingResult(body, "")
+        body: String,
+    ): ResponseEntity<String> {
+        mqttService.publish("/modbus/exit", body.toByteArray())
 
-        log.debug("body : {}", body)
-
-        validator.validate(body, e)
-
-        if (!e.hasErrors()) {
-            val json = objectMapper.writeValueAsString(body.toDto())
-
-            if (!service.publish(MODBUS_ETHERNET_TOPIC, json.toByteArray()))
-                return ResponseEntity.internalServerError().build()
-        }
-
-        if (e.hasErrors())
-            return ResponseEntity.badRequest().body(RestError(e))
-
-        return ResponseEntity.ok().build()
+        return ResponseEntity.ok("Express")
     }
 
-    @Operation(summary = "subscribe - 이더넷 설정")
-    @GetMapping(path = ["/ethernet"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
-    suspend fun subscribeEthernet(
-        exchange: ServerWebExchange,
-    ): Flow<ServerSentEvent<ModbusEthernetDto>> {
-        return service.subscribe(MODBUS_ETHERNET_TOPIC)
-            .map {
-                val payloadString = String(it.second.payload)
-                val dto = objectMapper.readValue<ModbusEthernetDto>(payloadString)
-                ServerSentEvent.builder(dto).build()
-            }
-    }
-
-    @Operation(summary = "publish - 로그")
+    @Operation(summary = "publish reader")
     @PostMapping(
-        path = ["/log"],
+        path = ["/reader"],
         consumes = [MediaType.APPLICATION_JSON_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
-    suspend fun publishLog(
+    suspend fun postReader(
         exchange: ServerWebExchange,
 
         @RequestBody
-        @JsonFormat
-        body: ModbusLogRequest,
-    ): ResponseEntity<Any> {
-        val e = BeanPropertyBindingResult(body, "")
+        body: String,
+    ): ResponseEntity<String> {
+        mqttService.publish("/modbus/master/read", body.toByteArray())
 
-        log.debug("body : {}", body)
-
-        validator.validate(body, e)
-
-        if (!e.hasErrors()) {
-            val json = objectMapper.writeValueAsString(body.toDto())
-
-            if (!service.publish(MODBUS_LOG_TOPIC, json.toByteArray()))
-                return ResponseEntity.internalServerError().build()
-        }
-
-        if (e.hasErrors())
-            return ResponseEntity.badRequest().body(RestError(e))
-
-        return ResponseEntity.ok().build()
+        return ResponseEntity.ok("Express")
     }
 
-    @Operation(summary = "subscribe - 로그")
-    @GetMapping(path = ["/log"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
-    suspend fun subscribeLog(
+    @Operation(summary = "publish writer")
+    @PostMapping(
+        path = ["/writer"],
+        consumes = [MediaType.APPLICATION_JSON_VALUE],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    suspend fun postWriter(
         exchange: ServerWebExchange,
-    ): Flow<ServerSentEvent<ModbusLogDto>> {
-        return service.subscribe(MODBUS_LOG_TOPIC)
-            .map {
-                val payloadString = String(it.second.payload)
-                val dto = objectMapper.readValue<ModbusLogDto>(payloadString)
-                ServerSentEvent.builder(dto).build()
-            }
+
+        @RequestBody
+        body: String,
+    ): ResponseEntity<String> {
+        mqttService.publish("/modbus/master/write", body.toByteArray())
+
+        return ResponseEntity.ok("Express")
     }
+
+    @Operation(summary = "publish MES start")
+    @PostMapping(
+        path = ["/MSE/start"],
+        consumes = [MediaType.APPLICATION_JSON_VALUE],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    suspend fun postMESStart(
+        exchange: ServerWebExchange,
+
+        @RequestBody
+        body: String,
+    ): ResponseEntity<String> {
+        mqttService.publish("/modbus/slave", body.toByteArray())
+
+        return ResponseEntity.ok("Express")
+    }
+
+    @Operation(summary = "로그?")
+    @GetMapping(path = ["/log"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    suspend fun getLog(
+        exchange: ServerWebExchange,
+    ): ResponseEntity<String> {
+//        SELECT * FROM Server_Log
+
+        return ResponseEntity.ok("테스트")
+    }
+
+
+//    @PostMapping(
+//        path = ["/req-rep"],
+//        consumes = [MediaType.APPLICATION_JSON_VALUE],
+//        produces = [MediaType.APPLICATION_JSON_VALUE]
+//    )
+//    suspend fun reqRep(
+//        exchange: ServerWebExchange,
+//
+//        @RequestBody
+//        @JsonFormat
+//        body: Any,
+//    ): ResponseEntity<Any> {
+//        log.debug("body : {}", body)
+//
+//        val topic = service.genReqTopic()
+//
+//        val json = objectMapper.writeValueAsString(body)
+//
+//        val flowDto = service.subscribe(topic)
+//            .map {
+//                val payloadString = String(it.second.payload)
+//                objectMapper.readValue<Any>(payloadString)
+//            }
+//
+//        service.publish(topic, json.toByteArray())
+//
+//        val dto = flowDto.firstOrNull()
+//
+//        return dto?.let { ResponseEntity.ok(it) } ?: ResponseEntity.internalServerError().build()
+//    }
 }

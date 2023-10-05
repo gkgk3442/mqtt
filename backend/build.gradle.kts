@@ -8,7 +8,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.2"
     id("org.graalvm.buildtools.native") version "0.9.23"
 
-    id("com.github.node-gradle.node") version "5.0.0"
+//    id("com.github.node-gradle.node") version "5.0.0"
     id("com.gorylenko.gradle-git-properties") version "2.4.1"
 
     kotlin("jvm") version "1.8.22"

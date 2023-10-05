@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
 
-//@ControllerAdvice
 @RestControllerAdvice
 class RestControllerExceptionHandler(
     private val objMapper: ObjectMapper,

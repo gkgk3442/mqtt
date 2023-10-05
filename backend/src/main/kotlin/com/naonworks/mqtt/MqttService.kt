@@ -1,6 +1,5 @@
 package com.naonworks.mqtt
 
-import jakarta.annotation.PostConstruct
 import jakarta.annotation.PreDestroy
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
@@ -11,7 +10,6 @@ import org.eclipse.paho.client.mqttv3.*
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Sinks
-import java.util.*
 
 @Service
 class MqttService(
@@ -23,28 +21,32 @@ class MqttService(
     private val subscribeSinks = Sinks.many().multicast().directAllOrNothing<Pair<String, MqttMessage>>()
 
     private lateinit var client: MqttClient
-    private val REQ_TOPIC = "req"
 
-    @PostConstruct
-    fun init() {
+    init {
         val options = MqttConnectOptions()
         options.isCleanSession = true
+        options.connectionTimeout = 1
         options.keepAliveInterval = 30
 
-        val persistence = MemoryPersistence()
+        client = MqttClient(props.serverUri, props.clientId, MemoryPersistence())
 
-        client = MqttClient(props.serverUri, props.clientId, persistence)
         client.setCallback(object : MqttCallback {
             override fun connectionLost(cause: Throwable) {}
 
             override fun messageArrived(topic: String, message: MqttMessage) {
-                log.debug("subscribe topic : {}, id : {}, payload : {}", topic, message.id, String(message.payload))
+                log.debug(
+                    "subscribe topic : {}, id : {}, payload : {}",
+                    topic,
+                    message.id,
+                    String(message.payload)
+                )
 
                 subscribeSinks.tryEmitNext(topic to message)
             }
 
             override fun deliveryComplete(token: IMqttDeliveryToken) {}
         })
+
         client.connect(options)
     }
 
@@ -53,8 +55,6 @@ class MqttService(
         client.disconnect()
         client.close()
     }
-
-    fun genReqTopic(): String = REQ_TOPIC.plus("/").plus(UUID.randomUUID().toString())
 
     suspend fun publish(topic: String, payload: ByteArray): Boolean {
         log.debug("publish topic : ${topic}, payload :${String(payload)}")
@@ -65,7 +65,7 @@ class MqttService(
         try {
             client.publish(topic, message)
         } catch (e: Exception) {
-            e.printStackTrace()
+            log.error("", e)
 
             return false
         }
@@ -93,8 +93,8 @@ class MqttService(
             }
     }
 
-    fun subscribe(topic: String): Flow<Pair<String, MqttMessage>> =
-        startsWithTopicSubscribe(topic).filter { it.first.equals(topic, false) }
+    fun subscribe(topic: String): Flow<MqttMessage> =
+        startsWithTopicSubscribe(topic).filter { it.first.equals(topic, false) }.map { it.second }
 
     private fun unsubscribe(topic: String) {
         val cnt = subscribeMap.getOrDefault(topic, 0)
