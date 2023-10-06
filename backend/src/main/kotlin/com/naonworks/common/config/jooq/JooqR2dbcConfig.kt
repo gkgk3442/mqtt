@@ -10,8 +10,6 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver
 
-
-@EnableConfigurationProperties(SqlInitializationProperties::class)
 @Configuration(proxyBeanMethods = false)
 class JooqR2dbcConfig(
     private val props: JooqProperties,
@@ -27,7 +25,12 @@ class JooqR2dbcConfig(
                 runBlocking {
                     val resource = PathMatchingResourcePatternResolver().getResource(it)
                     val sql = String(resource.inputStream.readAllBytes())
-                    JooqQuery.execute(ctx.query(sql))
+                    sql.split(";").forEach {item ->
+                        val query = item.trim()
+
+                        if(query.isNotBlank())
+                            JooqQuery.execute(ctx.query(query))
+                    }
                 }
             }
 
@@ -35,7 +38,12 @@ class JooqR2dbcConfig(
                 runBlocking {
                     val resource = PathMatchingResourcePatternResolver().getResource(it)
                     val sql = String(resource.inputStream.readAllBytes())
-                    JooqQuery.execute(ctx.query(sql))
+                    sql.split(";").forEach {item ->
+                        val query = item.trim()
+
+                        if(query.isNotBlank())
+                            JooqQuery.execute(ctx.query(query))
+                    }
                 }
             }
         }

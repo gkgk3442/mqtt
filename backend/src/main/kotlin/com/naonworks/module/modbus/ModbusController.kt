@@ -3,6 +3,7 @@ package com.naonworks.module.modbus
 import com.naonworks.common.config.jooq.JooqQuery
 import com.naonworks.entity.log.tables.ServerLogTable
 import com.naonworks.entity.log.tables.pojos.ServerLogPojo
+import com.naonworks.module.modbus.dto.ModbusEthernetRequest
 import com.naonworks.module.modbus.mapstruct.ServerLogMapper
 import com.naonworks.module.mqtt.MqttService
 import io.swagger.v3.oas.annotations.Operation
