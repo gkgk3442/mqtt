@@ -1,4 +1,4 @@
-package com.naonworks.mqtt
+package com.naonworks.module.mqtt
 
 import jakarta.annotation.PreDestroy
 import kotlinx.coroutines.flow.Flow

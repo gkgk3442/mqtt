@@ -1,4 +1,4 @@
-package com.naonworks.config.jackson
+package com.naonworks.common.config.jackson
 
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext

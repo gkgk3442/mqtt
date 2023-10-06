@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS `LOG`.`Server_Log`
+(
+    `Time`    TIMESTAMP    DEFAULT NULL,
+    `Type`    VARCHAR(30)  DEFAULT NULL,
+    `Content` VARCHAR(300) DEFAULT NULL
+);
+
+CREATE TABLE IF NOT EXISTS `LOG`.`Client_Log`
+(
+    `Time`    TIMESTAMP    DEFAULT NULL,
+    `Type`    VARCHAR(30)  DEFAULT NULL,
+    `Content` VARCHAR(300) DEFAULT NULL
+);

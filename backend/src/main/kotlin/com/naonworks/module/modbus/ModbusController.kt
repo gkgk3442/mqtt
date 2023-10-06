@@ -1,15 +1,20 @@
-package com.naonworks.modbus
+package com.naonworks.module.modbus
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.naonworks.mqtt.MqttService
+import com.naonworks.common.config.jooq.JooqQuery
+import com.naonworks.entity.log.tables.ServerLogTable
+import com.naonworks.entity.log.tables.pojos.ServerLogPojo
+import com.naonworks.module.modbus.mapstruct.ServerLogMapper
+import com.naonworks.module.mqtt.MqttService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.toList
+import org.jooq.DSLContext
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.http.codec.ServerSentEvent
-import org.springframework.validation.SmartValidator
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ServerWebExchange
 import java.util.*
@@ -20,10 +25,10 @@ import kotlin.random.Random
 @RequestMapping("/api/modbus")
 class ModbusController(
     private val mqttService: MqttService,
-    private val objectMapper: ObjectMapper,
-    private val validator: SmartValidator,
+    private val ctx: DSLContext,
 ) {
     private val log = org.slf4j.LoggerFactory.getLogger(this::class.java)
+    private val mapper = ServerLogMapper.INSTANCE
 
     @Operation(summary = "sse system subscribe")
     @GetMapping(path = ["/sse/system"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
@@ -142,41 +147,14 @@ class ModbusController(
     @GetMapping(path = ["/log"], produces = [MediaType.APPLICATION_JSON_VALUE])
     suspend fun getLog(
         exchange: ServerWebExchange,
-    ): ResponseEntity<String> {
-//        SELECT * FROM Server_Log
+    ): ResponseEntity<List<ServerLogPojo>> {
+        val table = ServerLogTable.Server_Log
 
-        return ResponseEntity.ok("테스트")
+        val query = ctx.selectFrom(table)
+
+        val list = JooqQuery.findAllFlow(query).mapNotNull { mapper.recordToPojo(it) }.toList()
+
+        return ResponseEntity.ok(list)
     }
 
-
-//    @PostMapping(
-//        path = ["/req-rep"],
-//        consumes = [MediaType.APPLICATION_JSON_VALUE],
-//        produces = [MediaType.APPLICATION_JSON_VALUE]
-//    )
-//    suspend fun reqRep(
-//        exchange: ServerWebExchange,
-//
-//        @RequestBody
-//        @JsonFormat
-//        body: Any,
-//    ): ResponseEntity<Any> {
-//        log.debug("body : {}", body)
-//
-//        val topic = service.genReqTopic()
-//
-//        val json = objectMapper.writeValueAsString(body)
-//
-//        val flowDto = service.subscribe(topic)
-//            .map {
-//                val payloadString = String(it.second.payload)
-//                objectMapper.readValue<Any>(payloadString)
-//            }
-//
-//        service.publish(topic, json.toByteArray())
-//
-//        val dto = flowDto.firstOrNull()
-//
-//        return dto?.let { ResponseEntity.ok(it) } ?: ResponseEntity.internalServerError().build()
-//    }
 }

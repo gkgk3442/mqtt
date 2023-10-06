@@ -1,4 +1,4 @@
-package com.naonworks.config.jackson
+package com.naonworks.common.config.jackson
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
@@ -14,9 +14,12 @@ class CustomJackson2ObjectMapperBuilderCustomizer : Jackson2ObjectMapperBuilderC
     override fun customize(builder: Jackson2ObjectMapperBuilder) {
         builder.featuresToEnable(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL)
         builder.propertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE)
+        // builder.propertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+        // builder.serializationInclusion(Include.NON_EMPTY);
         builder.serializationInclusion(JsonInclude.Include.NON_NULL)
 
         builder.deserializerByType(Number::class.java, CustomNumberDeserializer())
         builder.deserializerByType(OffsetDateTime::class.java, CustomOffsetDateTimeDeserializer())
+        builder.deserializerByType(String::class.java, StringWithoutSpaceDeserializer())
     }
 }

@@ -1,4 +1,4 @@
-package com.naonworks.modbus.dto
+package com.naonworks.module.modbus.dto
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties

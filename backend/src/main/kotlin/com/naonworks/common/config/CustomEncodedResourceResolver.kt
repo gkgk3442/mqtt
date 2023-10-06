@@ -1,4 +1,4 @@
-package com.naonworks.config
+package com.naonworks.common.config
 
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.reactor.mono
@@ -27,4 +27,5 @@ class CustomEncodedResourceResolver(private val defaultResource: Resource) : Enc
 
         resource
     }
+
 }

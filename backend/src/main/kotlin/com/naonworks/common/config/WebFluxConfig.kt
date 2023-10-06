@@ -1,5 +1,4 @@
-package com.naonworks.config
-
+package com.naonworks.common.config
 
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.ClassPathResource
@@ -24,8 +23,6 @@ class WebFluxConfig : WebFluxConfigurer {
             .setOrder(0)
             .addResourceHandler("", "/**")
             .addResourceLocations(* CLASSPATH_RESOURCE_LOCATIONS)
-//            .setOptimizeLocations(false)
-//            .setUseLastModified(true)
             .resourceChain(true)
             .addResolver(CustomEncodedResourceResolver(ClassPathResource("/static/index.html")))
     }

@@ -1,11 +1,11 @@
-package com.naonworks.mqtt
+package com.naonworks.module.mqtt
 
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import org.eclipse.paho.client.mqttv3.MqttClient
 import org.springframework.boot.context.properties.ConfigurationProperties
 
-@ConfigurationProperties(prefix = "mqtt")
+@ConfigurationProperties(prefix = "sys.mqtt")
 data class MqttProperties(
     @field:NotBlank
     val serverUri: String,

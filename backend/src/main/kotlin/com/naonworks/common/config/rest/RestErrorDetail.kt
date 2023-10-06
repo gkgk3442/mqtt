@@ -1,9 +1,11 @@
-package com.naonworks.config.rest
+package com.naonworks.common.config.rest
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import org.jooq.exception.DataAccessException
 import org.springframework.context.support.DefaultMessageSourceResolvable
 import org.springframework.validation.FieldError
 import org.springframework.validation.ObjectError
+import java.sql.SQLException
 import java.util.*
 
 class RestErrorDetail {
@@ -20,8 +22,13 @@ class RestErrorDetail {
     var rejectValue: Any? = null
 
     constructor(e: Exception) {
+//        exception = e.javaClass.simpleName
         exception = e::class.simpleName
-        message = e.message
+
+        message = if (e is SQLException || e is DataAccessException || e is DataAccessException)
+            "sql error"
+        else
+            e.message
 
         if (e is RestException) {
             val err = e as RestException
