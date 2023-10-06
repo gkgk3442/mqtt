@@ -3,7 +3,6 @@ package com.naonworks.module.modbus
 import com.naonworks.common.config.jooq.JooqQuery
 import com.naonworks.entity.log.tables.ServerLogTable
 import com.naonworks.entity.log.tables.pojos.ServerLogPojo
-import com.naonworks.module.modbus.dto.ModbusEthernetRequest
 import com.naonworks.module.modbus.mapstruct.ServerLogMapper
 import com.naonworks.module.mqtt.MqttService
 import io.swagger.v3.oas.annotations.Operation
@@ -11,7 +10,6 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.flow.toList
 import org.jooq.DSLContext
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -148,12 +146,12 @@ class ModbusController(
     @GetMapping(path = ["/log"], produces = [MediaType.APPLICATION_JSON_VALUE])
     suspend fun getLog(
         exchange: ServerWebExchange,
-    ): ResponseEntity<List<ServerLogPojo>> {
+    ): ResponseEntity<Flow<ServerLogPojo>> {
         val table = ServerLogTable.Server_Log
 
         val query = ctx.selectFrom(table)
 
-        val list = JooqQuery.findAllFlow(query).mapNotNull { mapper.recordToPojo(it) }.toList()
+        val list = JooqQuery.findAllFlow(query).mapNotNull { mapper.recordToPojo(it) }
 
         return ResponseEntity.ok(list)
     }
